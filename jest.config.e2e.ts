@@ -25,7 +25,8 @@ const config: Config = {
     ],
   },
   testMatch: ["<rootDir>/tests/e2e/**/*.e2e.test.ts"],
-  testTimeout: 60000,
+  testTimeout: 15000,
+  maxWorkers: "50%",
   collectCoverageFrom: ["src/state/keeper.ts"],
 };
 

@@ -48,6 +48,18 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
 
+      - name: E2E concentrated liquidity routing (timed)
+        run: |
+          start=$(date +%s)
+          npx tsx --test test/concentratedLiquidityRouting.e2e.test.ts
+          end=$(date +%s)
+          elapsed=$((end - start))
+          echo "E2E routing suite completed in ${elapsed}s"
+          if [ "$elapsed" -ge 15 ]; then
+            echo "::error::E2E routing suite exceeded 15s budget (${elapsed}s)"
+            exit 1
+          fi
+
       - name: OpenAPI compatibility check against main
         env:
           OPENAPI_BREAKING_CHANGE_APPROVAL: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'api-breaking-change-approved') && 'true' || 'false' }}

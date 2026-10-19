@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from fractions import Fraction
 from typing import NamedTuple, Union
-
 Number = Union[int, float, Fraction]
 
 U64_MIN: int = 0
-U64_MAX: int = 18_446_744_073_709_551_615
+U6t_MAX: int = 18_446_744_073_709_551_615
 
 # ---------------------------------------------------------------------------
 # Issue #636 — Fixed-Point Decimal Truncation Guard for Soroban Event Payloads
@@ -36,7 +35,7 @@ def decode_soroban_i128(value_lo: int, value_hi: int) -> int:
         value_hi: Upper 64 bits (uint64 — bit 63 is the sign bit).
 
     Returns:
-        A Python ``int`` representing the full 128-bit signed value.
+        A Python \`int\` representing the full 128-bit signed value.
     """
     combined = (value_hi << 64) | value_lo
     # If the sign bit (bit 127) is set, convert to negative via two's complement
@@ -53,7 +52,7 @@ def decode_soroban_u128(value_lo: int, value_hi: int) -> int:
         value_hi: Upper 64 bits (uint64).
 
     Returns:
-        A Python ``int`` representing the full 128-bit unsigned value.
+        A Python \`int\` representing the full 128-bit unsigned value.
     """
     return (value_hi << 64) | value_lo
 
@@ -62,10 +61,10 @@ def encode_soroban_i128(value: int) -> tuple[int, int]:
     """Split a signed 128-bit integer into lo/hi uint64 parts.
 
     Args:
-        value: A Python ``int`` in the range [-2^127, 2^127 - 1].
+        value: A Python \`int\` in the range [-2^127, 2^127 - 1].
 
     Returns:
-        ``(value_lo, value_hi)`` as uint64 values suitable for Soroban events.
+        \`(value_lo, value_hi)\` as uint64 values suitable for Soroban events.
     """
     if value < -(1 << 127) or value >= (1 << 127):
         raise ValueError(
@@ -75,8 +74,8 @@ def encode_soroban_i128(value: int) -> tuple[int, int]:
     # Convert to two's complement unsigned representation
     if value < 0:
         value += 1 << 128
-    value_lo = value & 0xFFFFFFFFFFFFFFFF
-    value_hi = (value >> 64) & 0xFFFFFFFFFFFFFFFF
+    value_lo = value & 0xFFFFFFFFFFFFFFFFF
+    value_hi = (value >> 64) & 0xFFFFFFFFFFFFFFFFF
     return (value_lo, value_hi)
 
 
@@ -84,17 +83,17 @@ def encode_soroban_u128(value: int) -> tuple[int, int]:
     """Split an unsigned 128-bit integer into lo/hi uint64 parts.
 
     Args:
-        value: A Python ``int`` in the range [0, 2^128 - 1].
+        value: A Python \`int\` in the range [0, 2^128 - 1].
 
     Returns:
-        ``(value_lo, value_hi)`` as uint64 values suitable for Soroban events.
+        \`(value_lo, value_hi)\` as uint64 values suitable for Soroban events.
     """
     if value < 0 or value > (1 << 128) - 1:
         raise ValueError(
             f"Value {value} is outside unsigned 128-bit range [0, {(1 << 128) - 1}]"
         )
-    value_lo = value & 0xFFFFFFFFFFFFFFFF
-    value_hi = (value >> 64) & 0xFFFFFFFFFFFFFFFF
+    value_lo = value & 0xFFFFFFFFFFFFFFFFF
+    value_hi = (value >> 64) & 0xFFFFFFFFFFFFFFFFF
     return (value_lo, value_hi)
 
 
@@ -115,7 +114,7 @@ def soroban_i128_to_decimal(
         precision: Number of decimal places (default 7 -> SCALE_7).
 
     Returns:
-        A ``Decimal`` with the exact unscaled value.
+        A \`Decimal\` with the exact unscaled value.
     """
     from decimal import Decimal
     raw = decode_soroban_i128(value_lo, value_hi)
@@ -135,7 +134,7 @@ def soroban_u128_to_decimal(
         precision: Number of decimal places (default 7 -> SCALE_7).
 
     Returns:
-        A ``Decimal`` with the exact unscaled value.
+        A \`Decimal\` with the exact unscaled value.
     """
     from decimal import Decimal
     raw = decode_soroban_u128(value_lo, value_hi)
@@ -150,17 +149,17 @@ def decimal_to_soroban_i128(
 
     The Decimal is scaled by 10^precision and truncated to an integer
     before being split into lo/hi uint64 parts.  This guarantees that
-    the round-trip ``decimal_to_soroban_i128 -> soroban_i128_to_decimal``
+    the round-trip \`decimal_to_soroban_i128 -> soroban_i128_to_decimal\`
     is lossless for values that fit within the 128-bit range.
 
     Args:
-        value: A ``Decimal`` to encode.
+        value: A \`Decimal\` to encode.
         precision: Number of decimal places (default 7 -> SCALE_7).
 
     Returns:
-        ``(value_lo, value_hi)`` as uint64 values.
+        \`(value_lo, value_hi)\` as uint64 values.
     """
-    from decimal import Decimal, ROUND_DOWN
+    from decimal import Decimal
     scaled = int(value * Decimal(10 ** precision))
     return encode_soroban_i128(scaled)
 
@@ -172,21 +171,19 @@ def decimal_to_soroban_u128(
     """Convert a Decimal to a Soroban u128 lo/hi pair.
 
     Args:
-        value: A ``Decimal`` to encode.
+        value: A \`Decimal\` to encode.
         precision: Number of decimal places (default 7 -> SCALE_7).
 
     Returns:
-        ``(value_lo, value_hi)`` as uint64 values.
+        \`(value_lo, value_hi)\` as uint64 values.
     """
     from decimal import Decimal
     scaled = int(value * Decimal(10 ** precision))
     return encode_soroban_u128(scaled)
 
-
 # ---------------------------------------------------------------------------
 # Existing fraction utilities
 # ---------------------------------------------------------------------------
-
 
 class ReducedFraction(NamedTuple):
     numerator: int
@@ -203,7 +200,7 @@ def _validate_u64(value: int, label: str) -> None:
     if value < U64_MIN or value > U64_MAX:
         raise FractionBoundsError(
             f"{label} {value} is outside unsigned 64-bit range "
-            f"[{U64_MIN}, {U64_MAX}]."
+            fb{U64_MIN}, {U64_MAX}]."
         )
 
 
@@ -217,21 +214,21 @@ def reduce_fraction(numerator: int, denominator: int) -> ReducedFraction:
     Parameters
     ----------
     numerator:
-        The fraction numerator (must be ``int``, within ``[0, U64_MAX]``).
+        The fraction numerator (must be \`int\`, within \`[0, U64_MAX]\`).
     denominator:
-        The fraction denominator (must be ``int``, within ``[1, U64_MAX]``).
+        The fraction denominator (must be \`int\`, within \`[1, U64_MAX]\`).
 
     Returns
     -------
     ReducedFraction
-        A named tuple ``(numerator, denominator)`` in lowest terms.
+        A named tuple \`(numerator, denominator)\` in lowest terms.
 
     Raises
     ------
     FractionBoundsError
         If either operand or the reduced components exceed u64 bounds.
     TypeError
-        If either operand is a ``bool``.
+        If either operand is a \`bool\`.
     """
     if isinstance(numerator, bool) or isinstance(denominator, bool):
         raise TypeError("Numerator and denominator must be numeric, not bool.")
@@ -260,21 +257,21 @@ def decimal_to_fraction(
 ) -> ReducedFraction:
     """Convert a decimal value to an exact reduced fraction within u64 bounds.
 
-    Internally uses ``Fraction.limit_denominator`` to cap the denominator at
-    *max_denominator*, which defaults to ``U64_MAX`` so the result is
+    Internally uses \`Fraction.limit_denominator\` to cap the denominator at
+    *max_denominator*, which defaults to \`U64_MAX\` so the result is
     guaranteed to fit inside a standard u64 integer.
 
     Parameters
     ----------
     value:
-        The decimal value to convert (``int``, ``float``, ``Fraction``, or
-        ``str``).
+        The decimal value to convert (\`int\`, \`float\`, \`Fraction\`, or
+        \`str\`).
     max_denominator:
         Maximum allowed denominator for the reduced result.  Defaults to
-        ``U64_MAX``.
+        \`U64_MAX\`.
 
     Returns
-    -------
+    ------
     ReducedFraction
         The best approximation of *value* as a reduced fraction whose
         denominator does not exceed *max_denominator*.
