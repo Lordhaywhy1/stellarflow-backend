@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "fix/issue-1322-build-end-to-end-test-suite-for-concentrated",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "fix/issue-1322-build-end-to-end-test-suite-for-concentrated": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "fix/issue-1322-build-end-to-end-test-suite-for-concentrated",
+    "origin"
+  ]
+}
